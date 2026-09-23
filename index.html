@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AR Vegetable Oil Filling Line - Side View</title>
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    #hud {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      width: min(94vw, 760px);
+      pointer-events: none;
+    }
+
+    .panel {
+      background: rgba(5, 20, 30, 0.78);
+      border: 1px solid rgba(80, 220, 255, 0.75);
+      border-radius: 14px;
+      padding: 10px 14px;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+      backdrop-filter: blur(4px);
+    }
+
+    .title {
+      font-size: clamp(16px, 4vw, 22px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 7px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      font-size: clamp(11px, 2.8vw, 14px);
+    }
+
+    .item {
+      background: rgba(255,255,255,.08);
+      padding: 7px 8px;
+      border-radius: 9px;
+      text-align: center;
+    }
+
+    .label {
+      opacity: .72;
+      font-size: .82em;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .value {
+      font-weight: 700;
+    }
+
+    #hint {
+      margin-top: 7px;
+      text-align: center;
+      font-size: clamp(11px, 2.7vw, 13px);
+      color: #d9f7ff;
+    }
+
+    #markerMessage {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      z-index: 20;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.72);
+      color: white;
+      font-size: 13px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .ok { color: #7CFF9D; }
+    .warn { color: #FFD966; }
+  </style>
+</head>
+
+<body>
+  <div id="hud">
+    <div class="panel">
+      <div class="title">AR Vegetable Oil Filling Line — Side View</div>
+      <div class="row">
+        <div class="item">
+          <span class="label">STATUS</span>
+          <span id="statusValue" class="value">WAITING</span>
+        </div>
+        <div class="item">
+          <span class="label">STATION</span>
+          <span id="stationValue" class="value">-</span>
+        </div>
+        <div class="item">
+          <span class="label">BOTTLES</span>
+          <span id="counterValue" class="value">0000</span>
+        </div>
+      </div>
+      <div id="hint">ขวดเปล่า → เติมน้ำมัน → ปิดฝา → ออกจากไลน์</div>
+    </div>
+  </div>
+
+  <div id="markerMessage">กรุณาส่องกล้องให้เห็น Hiro Marker</div>
+
+  <a-scene
+    embedded
+    vr-mode-ui="enabled: false"
+    renderer="antialias: true; alpha: true; precision: mediump"
+    arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;"
+  >
+    <a-marker
+      id="hiroMarker"
+      preset="hiro"
+      smooth="true"
+      smoothCount="20"
+      smoothTolerance="0.005"
+      smoothThreshold="2"
+    >
+      <a-entity id="lineRoot" position="0 0 0" scale="0.92 0.92 0.92">
+
+        <a-box position="0 0.05 0" width="5.8" height="0.10" depth="1.05" color="#D9DEE4"></a-box>
+        <a-box position="0 0.30 0" width="5.45" height="0.26" depth="0.50" color="#323840"></a-box>
+        <a-box position="0 0.49 0" width="5.45" height="0.08" depth="0.42" color="#161A1F"></a-box>
+        <a-box position="0 0.59 -0.18" width="5.45" height="0.03" depth="0.03" color="#BFC7CE"></a-box>
+        <a-box position="0 0.59 0.18" width="5.45" height="0.03" depth="0.03" color="#BFC7CE"></a-box>
+
+        <a-box position="-2.30 0.02 -0.15" width="0.10" height="0.44" depth="0.10" color="#595F67"></a-box>
+        <a-box position="-0.80 0.02 -0.15" width="0.10" height="0.44" depth="0.10" color="#595F67"></a-box>
+        <a-box position="0.80 0.02 -0.15" width="0.10" height="0.44" depth="0.10" color="#595F67"></a-box>
+        <a-box position="2.30 0.02 -0.15" width="0.10" height="0.44" depth="0.10" color="#595F67"></a-box>
+
+        <a-triangle position="-2.00 0.73 -0.28" rotation="0 0 -90" vertex-a="0 0.10 0" vertex-b="-0.15 -0.08 0" vertex-c="0.15 -0.08 0" color="#32E887"></a-triangle>
+        <a-triangle position="2.05 0.73 -0.28" rotation="0 0 -90" vertex-a="0 0.10 0" vertex-b="-0.15 -0.08 0" vertex-c="0.15 -0.08 0" color="#32E887"></a-triangle>
+
+        <a-entity id="station1" position="-0.85 0 0">
+          <a-box position="-0.30 1.08 0" width="0.08" height="1.20" depth="0.16" color="#D9DFE5"></a-box>
+          <a-box position="0.30 1.08 0" width="0.08" height="1.20" depth="0.16" color="#D9DFE5"></a-box>
+          <a-box position="0 1.64 0" width="0.72" height="0.08" depth="0.16" color="#D9DFE5"></a-box>
+
+          <a-box position="0 2.18 -0.06" width="1.05" height="0.34" depth="0.12" color="#F2B63A"></a-box>
+          <a-text value="STATION 1\nFILLING" align="center" color="#111111" width="2.1" position="0 2.18 0.01"></a-text>
+
+          <a-cylinder id="fillNozzle" position="0 1.46 0.10" radius="0.05" height="0.28" color="#C6CDD3"></a-cylinder>
+          <a-cylinder id="fillTip" position="0 1.25 0.10" radius="0.022" height="0.18" color="#767E86"></a-cylinder>
+          <a-cylinder id="oilStream" position="0 1.02 0.10" radius="0.020" height="0.28" color="#F4C124" opacity="0" transparent="true"></a-cylinder>
+        </a-entity>
+
+        <a-entity id="station2" position="1.05 0 0">
+          <a-box position="-0.30 1.08 0" width="0.08" height="1.20" depth="0.16" color="#D9DFE5"></a-box>
+          <a-box position="0.30 1.08 0" width="0.08" height="1.20" depth="0.16" color="#D9DFE5"></a-box>
+          <a-box position="0 1.64 0" width="0.72" height="0.08" depth="0.16" color="#D9DFE5"></a-box>
+
+          <a-box position="0 2.18 -0.06" width="1.05" height="0.34" depth="0.12" color="#1D76D3"></a-box>
+          <a-text value="STATION 2\nCAPPING" align="center" color="#FFFFFF" width="2.1" position="0 2.18 0.01"></a-text>
+
+          <a-cylinder id="capHead" position="0 1.46 0.10" radius="0.12" height="0.22" color="#32383D"></a-cylinder>
+          <a-cylinder id="workingCap" position="0 1.28 0.10" radius="0.10" height="0.07" color="#FFD52A" visible="false"></a-cylinder>
+        </a-entity>
+
+        <a-box position="-2.42 1.36 -0.10" width="0.64" height="0.36" depth="0.08" color="#30363D"></a-box>
+        <a-text value="EMPTY\nBOTTLE" align="center" color="#FFFFFF" width="1.4" position="-2.42 1.36 -0.04"></a-text>
+
+        <a-box position="2.42 1.36 -0.10" width="0.64" height="0.36" depth="0.08" color="#30363D"></a-box>
+        <a-text value="OUTFEED" align="center" color="#FFFFFF" width="1.4" position="2.42 1.36 -0.04"></a-text>
+
+        <a-entity id="bottle" position="-2.45 0.92 0.10">
+          <a-cylinder id="bottleBody" position="0 0 0" radius="0.18" height="0.66" color="#E9F9FF" opacity="0.62" transparent="true"></a-cylinder>
+          <a-cone id="bottleShoulder" position="0 0.36 0" radius-bottom="0.18" radius-top="0.10" height="0.18" color="#E9F9FF" opacity="0.62" transparent="true"></a-cone>
+          <a-cylinder id="bottleNeck" position="0 0.49 0" radius="0.10" height="0.13" color="#E9F9FF" opacity="0.62" transparent="true"></a-cylinder>
+
+          <a-cylinder position="0 -0.20 0" radius="0.185" height="0.015" color="#D4EFFA" opacity="0.85" transparent="true"></a-cylinder>
+          <a-cylinder position="0 -0.05 0" radius="0.185" height="0.015" color="#D4EFFA" opacity="0.85" transparent="true"></a-cylinder>
+          <a-cylinder position="0 0.10 0" radius="0.185" height="0.015" color="#D4EFFA" opacity="0.85" transparent="true"></a-cylinder>
+          <a-cylinder position="0 0.25 0" radius="0.185" height="0.015" color="#D4EFFA" opacity="0.85" transparent="true"></a-cylinder>
+
+          <a-cylinder id="oil" position="0 -0.315 0" radius="0.145" height="0.02" color="#F5C324" opacity="0.95" transparent="true"></a-cylinder>
+          <a-cylinder id="bottleCap" position="0 0.59 0" radius="0.105" height="0.075" color="#FFD52A" visible="false"></a-cylinder>
+        </a-entity>
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    (() => {
+      const marker = document.querySelector('#hiroMarker');
+      const bottle = document.querySelector('#bottle');
+      const oil = document.querySelector('#oil');
+      const bottleCap = document.querySelector('#bottleCap');
+      const fillNozzle = document.querySelector('#fillNozzle');
+      const fillTip = document.querySelector('#fillTip');
+      const oilStream = document.querySelector('#oilStream');
+      const capHead = document.querySelector('#capHead');
+      const workingCap = document.querySelector('#workingCap');
+
+      const statusValue = document.querySelector('#statusValue');
+      const stationValue = document.querySelector('#stationValue');
+      const counterValue = document.querySelector('#counterValue');
+      const markerMessage = document.querySelector('#markerMessage');
+
+      const X_START = -2.45;
+      const X_FILL  = -0.85;
+      const X_CAP   =  1.05;
+      const X_EXIT  =  2.55;
+
+      const MOVE_TO_FILL = 2400;
+      const FILL_TIME    = 2600;
+      const MOVE_TO_CAP  = 2400;
+      const MOVE_TO_EXIT = 2200;
+      const RESET_DELAY  = 1000;
+
+      let running = false;
+      let markerVisible = false;
+      let counter = 0;
+      let rafId = null;
+      let token = 0;
+
+      const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+      function clamp01(v) {
+        return Math.max(0, Math.min(1, v));
+      }
+
+      function easeInOutCubic(t) {
+        t = clamp01(t);
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
+      function setX(x) {
+        const p = bottle.getAttribute('position');
+        bottle.setAttribute('position', { x, y: p.y, z: p.z });
+      }
+
+      function setStatus(text, station='-') {
+        statusValue.textContent = text;
+        stationValue.textContent = station;
+      }
+
+      function formatCounter(v) {
+        return String(v).padStart(4, '0');
+      }
+
+      function animate(duration, update, expectedToken) {
+        return new Promise(resolve => {
+          const start = performance.now();
+          function frame(now) {
+            if (expectedToken !== token || !running || !markerVisible) {
+              resolve(false);
+              return;
+            }
+            const t = clamp01((now - start) / duration);
+            update(easeInOutCubic(t), t);
+            if (t < 1) {
+              rafId = requestAnimationFrame(frame);
+            } else {
+              resolve(true);
+            }
+          }
+          rafId = requestAnimationFrame(frame);
+        });
+      }
+
+      async function moveBottle(fromX, toX, duration, expectedToken) {
+        return animate(duration, (eased) => {
+          setX(fromX + (toX - fromX) * eased);
+        }, expectedToken);
+      }
+
+      async function fillingProcess(expectedToken) {
+        setStatus('FILLING', '1');
+        const nozzleStartY = 1.46;
+        const tipStartY = 1.25;
+        const drop = 0.20;
+
+        let ok = await animate(450, (eased) => {
+          fillNozzle.setAttribute('position', `0 ${nozzleStartY - drop * eased} 0.10`);
+          fillTip.setAttribute('position', `0 ${tipStartY - drop * eased} 0.10`);
+        }, expectedToken);
+        if (!ok) return false;
+
+        oilStream.setAttribute('opacity', 0.95);
+
+        ok = await animate(FILL_TIME, (eased) => {
+          const maxH = 0.50;
+          const h = 0.02 + (maxH - 0.02) * eased;
+          const bottomY = -0.32;
+          const centerY = bottomY + h / 2;
+          oil.setAttribute('geometry', `primitive: cylinder; radius: 0.145; height: ${h}`);
+          oil.setAttribute('position', `0 ${centerY} 0`);
+        }, expectedToken);
+        if (!ok) return false;
+
+        oilStream.setAttribute('opacity', 0);
+
+        ok = await animate(450, (eased) => {
+          fillNozzle.setAttribute('position', `0 ${nozzleStartY - drop * (1 - eased)} 0.10`);
+          fillTip.setAttribute('position', `0 ${tipStartY - drop * (1 - eased)} 0.10`);
+        }, expectedToken);
+
+        return ok;
+      }
+
+      async function cappingProcess(expectedToken) {
+        setStatus('CAPPING', '2');
+        const headStartY = 1.46;
+        const headDrop = 0.24;
+
+        workingCap.setAttribute('visible', true);
+
+        let ok = await animate(500, (eased) => {
+          capHead.setAttribute('position', `0 ${headStartY - headDrop * eased} 0.10`);
+          workingCap.setAttribute('position', `0 ${1.28 - headDrop * eased} 0.10`);
+        }, expectedToken);
+        if (!ok) return false;
+
+        ok = await animate(700, (eased) => {
+          workingCap.setAttribute('rotation', `0 ${eased * 540} 0`);
+          capHead.setAttribute('rotation', `0 ${eased * 220} 0`);
+        }, expectedToken);
+        if (!ok) return false;
+
+        workingCap.setAttribute('visible', false);
+        bottleCap.setAttribute('visible', true);
+
+        ok = await animate(500, (eased) => {
+          capHead.setAttribute('position', `0 ${headStartY - headDrop * (1 - eased)} 0.10`);
+        }, expectedToken);
+
+        return ok;
+      }
+
+      function resetBottle() {
+        setX(X_START);
+        oil.setAttribute('geometry', 'primitive: cylinder; radius: 0.145; height: 0.02');
+        oil.setAttribute('position', '0 -0.315 0');
+        bottleCap.setAttribute('visible', false);
+        workingCap.setAttribute('visible', false);
+        fillNozzle.setAttribute('position', '0 1.46 0.10');
+        fillTip.setAttribute('position', '0 1.25 0.10');
+        oilStream.setAttribute('opacity', 0);
+        capHead.setAttribute('position', '0 1.46 0.10');
+        capHead.setAttribute('rotation', '0 0 0');
+        workingCap.setAttribute('position', '0 1.28 0.10');
+        workingCap.setAttribute('rotation', '0 0 0');
+      }
+
+      async function runCycle(expectedToken) {
+        while (running && markerVisible && expectedToken === token) {
+          resetBottle();
+
+          setStatus('INFEED', '-');
+          if (!await moveBottle(X_START, X_FILL, MOVE_TO_FILL, expectedToken)) break;
+
+          if (!await fillingProcess(expectedToken)) break;
+
+          setStatus('TRANSFER', '1 → 2');
+          if (!await moveBottle(X_FILL, X_CAP, MOVE_TO_CAP, expectedToken)) break;
+
+          if (!await cappingProcess(expectedToken)) break;
+
+          setStatus('OUTFEED', '-');
+          if (!await moveBottle(X_CAP, X_EXIT, MOVE_TO_EXIT, expectedToken)) break;
+
+          counter += 1;
+          counterValue.textContent = formatCounter(counter);
+          setStatus('COMPLETE', '-');
+
+          await sleep(RESET_DELAY);
+          if (!running || !markerVisible || expectedToken !== token) break;
+        }
+      }
+
+      function startLine() {
+        if (running) return;
+        running = true;
+        token += 1;
+        setStatus('RUNNING', '-');
+        runCycle(token);
+      }
+
+      function stopLine() {
+        running = false;
+        token += 1;
+        if (rafId) cancelAnimationFrame(rafId);
+        setStatus('PAUSED', '-');
+      }
+
+      marker.addEventListener('markerFound', () => {
+        markerVisible = true;
+        markerMessage.textContent = 'Hiro Marker detected — Line running';
+        markerMessage.classList.add('ok');
+        markerMessage.classList.remove('warn');
+        startLine();
+      });
+
+      marker.addEventListener('markerLost', () => {
+        markerVisible = false;
+        markerMessage.textContent = 'Marker lost — กรุณาส่องกล้องให้เห็น Hiro Marker';
+        markerMessage.classList.remove('ok');
+        markerMessage.classList.add('warn');
+        stopLine();
+      });
+
+      resetBottle();
+      counterValue.textContent = formatCounter(counter);
+    })();
+  </script>
+</body>
+</html>
